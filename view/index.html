@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta CUFE DIAN</title>
+
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+
+<body>
+
+<header>
+
+  <div>
+    <h1>Consulta CUFE <span>DIAN</span></h1>
+    <div class="subtitle">
+      Exportador masivo de facturas electrónicas · v1.0
+    </div>
+  </div>
+
+</header>
+
+<main>
+
+<!-- PASOS -->
+
+<div class="steps">
+
+<div class="step active" id="step-1">
+
+<div class="step-num">1</div>
+
+<div class="step-label">
+Cargar Excel
+</div>
+
+</div>
+
+<div class="step" id="step-2">
+
+<div class="step-num">2</div>
+
+<div class="step-label">
+Consultar DIAN
+</div>
+
+</div>
+
+<div class="step" id="step-3">
+
+<div class="step-num">3</div>
+
+<div class="step-label">
+Exportar Excel
+</div>
+
+</div>
+
+</div>
+
+
+<!-- CARGA -->
+
+<div class="card" id="card-upload">
+
+<div class="card-title">
+Archivo Excel de CUFEs
+</div>
+
+<div class="info-box">
+
+<strong>Formato esperado:</strong>
+
+Suba un archivo
+<code>.xlsx</code>
+
+con una columna que contenga los CUFEs.
+
+El sistema detecta automáticamente la columna
+(CUFE, CUFE/CUDE, etc.).
+
+</div>
+
+
+<div class="dropzone" id="dropzone">
+
+<input
+type="file"
+id="xlsx-input"
+accept=".xlsx,.xls"
+>
+
+<div class="drop-text">
+
+<strong>Arrastre el archivo aquí</strong>
+
+o haga clic para seleccionarlo
+
+</div>
+
+<div class="drop-hint">
+
+Archivos .xlsx / .xls
+
+</div>
+
+</div>
+
+
+<div class="file-preview" id="file-preview">
+
+<div class="file-info">
+
+<div
+class="file-name"
+id="file-name-text"
+>
+archivo.xlsx
+</div>
+
+<div
+class="file-meta"
+id="file-meta-text"
+></div>
+
+</div>
+
+<button
+class="file-remove"
+id="file-remove-btn"
+title="Quitar archivo"
+>
+
+✕
+
+</button>
+
+</div>
+
+
+<div
+id="cufe-preview-section"
+style="display:none;margin-top:16px"
+>
+
+<div class="cufe-count">
+
+CUFEs detectados:
+
+<strong id="cufe-count-num">
+0
+</strong>
+
+</div>
+
+<div
+class="xml-list"
+id="cufe-list-preview"
+></div>
+
+</div>
+
+
+<div class="btn-row">
+
+<button
+class="btn btn-primary"
+id="btn-start"
+disabled
+>
+
+Iniciar consulta
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- PROGRESO -->
+
+<div
+class="card"
+id="progress-section"
+style="display:none"
+>
+
+<div class="card-title">
+
+Consultando DIAN
+
+</div>
+
+
+<div class="progress-bar-wrap">
+
+<div
+class="progress-bar-fill"
+id="progress-fill"
+></div>
+
+</div>
+
+
+<div class="progress-stats">
+
+<span>
+
+Progreso:
+
+<span
+class="highlight"
+id="prog-done"
+>
+
+0
+
+</span>
+
+/
+
+<span id="prog-total">
+
+0
+
+</span>
+
+</span>
+
+<span>
+
+✅ <span id="prog-ok">0</span>
+
+❌ <span id="prog-err">0</span>
+
+</span>
+
+<span>
+
+<span id="prog-pct">
+0
+</span>%
+
+</span>
+
+</div>
+
+
+<div
+class="log-wrap"
+id="log-wrap"
+></div>
+
+
+<div
+class="btn-row"
+style="margin-top:16px"
+>
+
+<button
+class="btn btn-ghost"
+id="btn-stop"
+>
+
+Detener
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- RESULTADOS -->
+
+<div
+class="card"
+id="results-section"
+style="display:none"
+>
+
+<div class="card-title">
+
+Consulta completada
+
+</div>
+
+
+<div class="results-grid">
+
+<div class="stat-box stat-total">
+
+<div
+class="stat-num"
+id="stat-total"
+>
+0
+</div>
+
+<div class="stat-label">
+Total CUFEs
+</div>
+
+</div>
+
+
+<div class="stat-box stat-ok">
+
+<div
+class="stat-num"
+id="stat-ok"
+>
+0
+</div>
+
+<div class="stat-label">
+Exitosos
+</div>
+
+</div>
+
+
+<div class="stat-box stat-err">
+
+<div
+class="stat-num"
+id="stat-err"
+>
+0
+</div>
+
+<div class="stat-label">
+Con error
+</div>
+
+</div>
+
+
+<div class="stat-box stat-skip">
+
+<div
+class="stat-num"
+id="stat-skip"
+>
+0
+</div>
+
+<div class="stat-label">
+Sin datos
+</div>
+
+</div>
+
+</div>
+
+
+<div
+class="table-wrap"
+id="preview-table-wrap"
+style="max-height:300px;overflow-y:auto"
+></div>
+
+
+<div class="btn-row">
+
+<button
+class="btn btn-success"
+id="btn-export"
+>
+
+Descargar Excel
+
+</button>
+
+<button
+class="btn btn-ghost"
+id="btn-restart"
+>
+
+Nueva consulta
+
+</button>
+
+</div>
+
+
+<div
+class="warn-box"
+id="warn-errors"
+style="display:none"
+>
+
+⚠ Algunos CUFEs no pudieron consultarse.
+
+Verifique la conexión y disponibilidad del portal DIAN.
+
+</div>
+
+</div>
+
+</main>
+
+<footer>
+
+Herramienta de uso interno · Procesamiento local · Sin almacenamiento externo
+
+</footer>
+
+<script src="/static/js/uploader.js"></script>
+<script src="/static/js/consulta.js"></script>
+<script src="/static/js/exporter.js"></script>
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>
