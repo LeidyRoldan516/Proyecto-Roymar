@@ -1,21 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
 
 :root {
-  --bg:      #0b0f1a;
-  --surface: #131929;
-  --surface2:#1a2238;
-  --border:  #232f4b;
+  --bg:      #182139;
+  --surface: #334470;
+  --surface2:#5069AF;
+  --border:  #171F31;
   --accent:  #3b82f6;
   --accent2: #22d3ee;
   --success: #10b981;
   --warn:    #f59e0b;
   --error:   #ef4444;
-  --text:    #e2e8f0;
-  --muted:   #64748b;
+  --text:    white;
+  --muted:   #BBC3CE;
   --radius:  12px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; 
+  letter-spacing: 1px; }
 
 body {
   background: var(--bg);
@@ -24,6 +25,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 body::before {
@@ -46,6 +48,7 @@ header {
   display: flex;
   align-items: center;
   gap: 20px;
+  color: var(--text);
 }
 
 .logo-mark {
@@ -67,8 +70,8 @@ h1 {
 h1 span { color: var(--accent2); }
 
 .subtitle {
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 11px;
+  color: var(--text);
   font-family: 'DM Mono', monospace;
   margin-top: 2px;
 }
@@ -183,6 +186,9 @@ main {
 .file-info { flex: 1; }
 .file-name { font-size: 14px; font-weight: 500; }
 .file-meta { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+#file-meta-text {
+  color: var(--text);
+}
 .file-remove {
   background: none; border: none;
   color: var(--muted); cursor: pointer;
