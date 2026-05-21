@@ -10,11 +10,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
-
+from openpyxl.utils import get_column_letter
 from model.cufe import CufeResultado
 from model.dian_client import consultar_cufe
 from model.excel_parser import extraer_cufes, ExcelParserError
-
 
 # ── Configuración ─────────────────────────────────────────────────────────────
 
@@ -122,7 +121,9 @@ def _serializar(r: CufeResultado) -> dict:
 
 def _construir_hoja_datos(wb: openpyxl.Workbook, resultados: list[dict]) -> None:
     ws = wb.active
+    assert ws is not None, "El workbook debe tener al menos una hoja activa"
     fecha_hoy = datetime.now().strftime("%Y%m%d")
+    
     ws.title = f"Reporte_DIAN_{fecha_hoy}"
 
     cabeceras = CufeResultado.cabeceras_excel()
@@ -158,7 +159,7 @@ def _construir_hoja_datos(wb: openpyxl.Workbook, resultados: list[dict]) -> None
     anchos = [22,64,12,10,8,14,14,18,22,14,30,14,30,
               10,8,8,8,8,10,10,14,10,8,8,8,8,10,12,10,14,30,10]
     for i, ancho in enumerate(anchos, start=1):
-        ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = ancho
+        ws.column_dimensions[get_column_letter(i)].width = ancho
 
     ws.freeze_panes = "A2"
 
