@@ -117,14 +117,17 @@ python server.py
 
  2. Activar entorno virtual
 
- #### Windows CMD
-  `venv\Scripts\activate`
-
- #### Windows PowerShell
-`venv\Scripts\Activate.ps1`
-
- #### Linux / macOS
-`source venv/bin/activate`
+     #### Windows CMD
+      `venv\Scripts\activate`
+    
+     #### Windows PowerShell
+    `venv\Scripts\Activate.ps1`
+    
+     #### Linux / macOS
+    `source venv/bin/activate`
 
  3. Instalar dependencias
 `pip install -r requirements.txt`
+
+4. Crear archivo .env en la raiz con key generada desde 2captcha
+`2CAPTCHA_API_KEY=key_aqui`
