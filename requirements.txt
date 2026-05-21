@@ -7,3 +7,4 @@ Requests>=2.34.2
 urllib3>=2.7.0
 lxml>=5.0
 beautifulsoup4>=4.12
+dotenv>=0.21.0
