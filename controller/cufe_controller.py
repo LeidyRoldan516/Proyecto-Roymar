@@ -179,7 +179,7 @@ def _construir_hoja_resumen(wb: openpyxl.Workbook, resultados: list[dict]) -> No
         ["Sin datos estructurados", sin_datos],
         ["Con error de conexión", errores],
         ["", ""],
-        ["Generado por", "Consulta CUFE DIAN v1.0"],
+        ["Generado por", "Consulta CUFE DIAN v2.0"],
     ]
     for fila in filas:
         ws.append(fila)
