@@ -111,14 +111,17 @@ python server.py
 6. El frontend consume los endpoints definidos en `controller.routes`.
 
 ---
-### views
-#### base
+## views
+### base
 <img width="1364" height="648" alt="WhatsApp Image 2026-05-21 at 10 53 43 PM" src="https://github.com/user-attachments/assets/c2516e25-d938-448d-9cb7-4ea1b22496cb" />
-#### archivo añadido
+
+### archivo añadido
 <img width="1267" height="644" alt="image" src="https://github.com/user-attachments/assets/b839c75c-d41b-499a-b794-e208b1904de8" />
-#### consulta
+
+### consulta
 <img width="1363" height="643" alt="image" src="https://github.com/user-attachments/assets/790811f2-7d81-4b34-ab63-d3fe55727130" />
-#### exportador
+
+### exportador
 <img width="1366" height="648" alt="image" src="https://github.com/user-attachments/assets/e50cbdad-dd37-4695-9976-5cbdd94f7014" />
 
 
