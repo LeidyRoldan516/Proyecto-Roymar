@@ -35,8 +35,6 @@ logging.getLogger("pdfplumber").setLevel(logging.WARNING)
 
 # Sesión HTTP compartida con retry y lock — evita colapso SSL bajo concurrencia
 _2CAPTCHA_LOCK = threading.Lock()
-# Semáforo: solo una tarea 2captcha a la vez — evita rate limiting por concurrencia
-_2CAPTCHA_TASK_SEMAPHORE = threading.Semaphore(1)
 _2CAPTCHA_SESSION = requests.Session()
 _2CAPTCHA_SESSION.verify = False
 _retry = Retry(total=5, backoff_factor=2, status_forcelist=[500, 502, 503, 504])
@@ -48,12 +46,12 @@ _BASE_URL  = "https://catalogo-vpfe.dian.gov.co"
 _SEARCH_URL = f"{_BASE_URL}/document/searchqr"
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-_PAGE_TIMEOUT = 30_000   # ms
-_CF_WAIT      = 15_000   # ms — Turnstile tarda más en navegador visible
-_PDF_TIMEOUT  = 30        # segundos
-_2CAPTCHA_TIMEOUT = 60    # segundos
+_PAGE_TIMEOUT = 50_000   # ms
+_CF_WAIT      = 30_000   # ms — Turnstile tarda más en navegador visible
+_PDF_TIMEOUT  = 45        # segundos
+_2CAPTCHA_TIMEOUT = 180    # segundos
 _2CAPTCHA_POLL_INTERVAL = 3
-_MAX_TURNSTILE_POR_CUFE = 3
+_MAX_TURNSTILE_POR_CUFE = 2
 _WORKER_STATE = threading.local()
 
 
@@ -140,7 +138,7 @@ def _descargar_pdf(cufe: str) -> bytes:
             timeout=_PAGE_TIMEOUT,
         )
         # Espera fija para que Cloudflare Turnstile cargue e inicialice
-        page.wait_for_timeout(4_000)
+        page.wait_for_timeout(5_000)
 
         # ── Paso 2: resolver Cloudflare Turnstile ──────────────────
         logger.debug("Resolviendo Cloudflare Turnstile...")
@@ -307,7 +305,7 @@ def _click_buscar_y_esperar_documento(page) -> None:
         return
 
     try:
-        page.wait_for_load_state("networkidle", timeout=5_000)
+        page.wait_for_load_state("networkidle", timeout=12_000)
     except PlaywrightTimeout:
         logger.debug("La pagina no llego a networkidle tras Buscar")
 
@@ -677,8 +675,6 @@ def _extraer_turnstile_sitekey(page) -> str:
 
 def _resolver_turnstile_2captcha(api_key: str, sitekey: str, pageurl: str) -> str:
     # Semáforo: solo una tarea 2captcha a la vez — evita rate limiting
-    with _2CAPTCHA_TASK_SEMAPHORE:
-        # Lock: solo un hilo usa la sesión HTTP a la vez — evita colapso SSL
         with _2CAPTCHA_LOCK:
             crear = _2CAPTCHA_SESSION.post(
                 "https://2captcha.com/in.php",
@@ -700,13 +696,13 @@ def _resolver_turnstile_2captcha(api_key: str, sitekey: str, pageurl: str) -> st
         logger.debug(f"2captcha acepto Turnstile id={captcha_id}")
 
         # Espera inicial — 2captcha suele tardar 2-3s en Turnstile
-        time.sleep(2)
+        time.sleep(4)
 
         deadline = time.time() + _2CAPTCHA_TIMEOUT
         while time.time() < deadline:
-            with _2CAPTCHA_LOCK:
-                respuesta = _2CAPTCHA_SESSION.get(
-                    "https://2captcha.com/res.php",
+            # Sin lock: cada poll usa su captcha_id, no compite con otros hilos
+            respuesta = _2CAPTCHA_SESSION.get(
+                "https://2captcha.com/res.php",
                     params={
                         "key": api_key,
                         "action": "get",
@@ -714,9 +710,9 @@ def _resolver_turnstile_2captcha(api_key: str, sitekey: str, pageurl: str) -> st
                         "json": 1,
                     },
                     timeout=30,
-                )
-                respuesta.raise_for_status()
-                data = respuesta.json()
+            )
+            respuesta.raise_for_status()
+            data = respuesta.json()
 
             if data.get("status") == 1:
                 logger.debug("2captcha devolvio token Turnstile")
