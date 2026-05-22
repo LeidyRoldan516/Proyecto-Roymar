@@ -131,3 +131,5 @@ python server.py
 
 4. Crear archivo .env en la raiz con key generada desde 2captcha
 `2CAPTCHA_API_KEY=key_aqui`
+5. instala playwright para ejecutar los navegadores headless
+   `playwright install`
